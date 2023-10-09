@@ -1,16 +1,57 @@
-export const App = () => {
-  return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontSize: 40,
-        color: '#010101'
-      }}
-    >
-      React homework template
-    </div>
-  );
-};
+import React, { Component } from 'react';
+import ContactForm from './ContactForm/ContactForm';
+import ContactList from './ContactList/ContactList';
+import Filter from './Filter/Filter';
+
+class App extends Component {
+  state = {
+    contacts: [],
+    filter: '',
+    name: '',
+    number: '',
+  };
+  
+  addContact = (name, number) => {
+    const newContact = {
+      id: Date.now().toString(),
+      name,
+      number,
+    };
+
+    this.setState((prevState) => ({
+      contacts: [...prevState.contacts, newContact],
+    }));
+  };
+  
+  deleteContact = (contactId) => {
+    this.setState((prevState) => ({
+      contacts: prevState.contacts.filter((contact) => contact.id !== contactId),
+    }));
+  };
+  
+  handleFilterChange = (e) => {
+    this.setState({ filter: e.target.value });
+  };
+
+  render() {
+    const { contacts, filter } = this.state;
+    const filteredContacts = contacts.filter((contact) =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
+
+    return (
+      <div className='container'>
+        <h1>Phonebook</h1>
+        <ContactForm onAddContact={this.addContact} />
+        <h2>Contacts</h2>
+        <Filter filter={filter} onFilterChange={this.handleFilterChange} />
+        <ContactList
+          contacts={filteredContacts}
+          onDeleteContact={this.deleteContact}
+        />
+      </div>
+    );
+  }
+}
+
+export default App;
